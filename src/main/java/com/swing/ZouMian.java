@@ -1,0 +1,190 @@
+package com.swing;
+
+
+import com.bean.Bean;
+import com.desk.Code;
+import com.sql.Shuju;
+import com.sqlsession.Getsql;
+import com.wen.Redxlx;
+
+import org.apache.ibatis.session.SqlSession;
+
+import org.apache.poi.ss.usermodel.Cell;
+
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.*;
+import java.util.List;
+
+public class ZouMian {
+    private JPanel zhongbu;
+
+    private static JCheckBox qingkong;
+    private static JCheckBox qingkongwen;
+    private static JCheckBox zhiding;
+    private JButton shuaixing;
+    private  JPanel panel1;
+    private ButtonGroup buttonGroup;
+    private  JPanel panel2;
+    private static JFrame frame;
+    public ZouMian(){
+        zhiding.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (zhiding.isSelected()){
+                    frame.setAlwaysOnTop(true);
+                }else {
+                    frame.setAlwaysOnTop(false);
+                }
+
+            }
+        });
+        shuaixing.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                SqlSession getsql = Getsql.geSession();
+                final Shuju shuju = getsql.getMapper(Shuju.class);
+                panel1.removeAll();
+
+                Redxlx redxlx  = Redxlx.getRedxlx();
+
+                redxlx.readxlsx();
+
+                List<Bean> beans = shuju.selectall();
+
+                JRadioButton jRadioButton[] = new JRadioButton[beans.size()];
+                for (int i = 0; i <beans.size(); i++) {
+                    final String name = beans.get(i).getName();
+                    jRadioButton[i] = new JRadioButton(name);
+                    jRadioButton[i].addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            JRadioButton temp = (JRadioButton) e.getSource();
+                            String dizhi =temp.getText();
+                            dizhi = shuju.select(dizhi);
+                            Code code = Code.getCode();
+                            code.setSysClipboardText(dizhi);
+                        }
+                    });
+                    jRadioButton[i].setFont(new Font("宋体", Font.PLAIN, 16));
+                    panel1.add(jRadioButton[i]);
+                    buttonGroup.add(jRadioButton[i]);
+
+                }
+
+                zhongbu.validate();
+                zhongbu.repaint();
+            }
+        });
+
+
+
+    }
+
+
+    public static void main() {
+         frame = new JFrame("ZouMian");
+        frame.setContentPane(new ZouMian().zhongbu);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        frame.setSize(400,300);
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                SqlSession getsql = Getsql.geSession();
+                Shuju shuju = getsql.getMapper(Shuju.class);
+                if (qingkong.isSelected())
+                {
+                    shuju.delectall();
+                    getsql.commit();
+
+                }
+
+
+                if(qingkongwen.isSelected()){
+                     XSSFWorkbook workbook = null;
+                    workbook = new XSSFWorkbook();
+                    //添加Worksheet（不添加sheet时生成的xls文件打开时会报错)
+                    String fileDir = "src/main/resources/peizhi.xlsx";
+                    String sheetName = "sheet1";
+                    Sheet sheet1 = workbook.createSheet(sheetName);
+                    //新建文件
+                    FileOutputStream out = null;
+                    try {
+                        //添加表头
+                        Row row = workbook.getSheet(sheetName).createRow(0);    //创建第一行
+                        String titleRow[] = {"name","address"};
+                        for(int i = 0;i < titleRow.length;i++){
+                            Cell cell = row.createCell(i);
+                            cell.setCellValue(titleRow[i]);
+                        }
+                        out = new FileOutputStream(fileDir);
+                        workbook.write(out);
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }finally {
+                        try {
+                            if (out != null) {
+                                out.close();
+                            }
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+
+                    }
+
+                }
+            }
+        });
+    }
+
+    {
+// GUI initializer generated by IntelliJ IDEA GUI Designer
+// >>> IMPORTANT!! <<<
+// DO NOT EDIT OR ADD ANY CODE HERE!
+        $$$setupUI$$$();
+    }
+
+    /**
+     * Method generated by IntelliJ IDEA GUI Designer
+     * >>> IMPORTANT!! <<<
+     * DO NOT edit this method OR call it in your code!
+     *
+     * @noinspection ALL
+     */
+    private void $$$setupUI$$$() {
+        zhongbu = new JPanel();
+        zhongbu.setLayout(new BorderLayout(0, 0));
+        qingkong = new JCheckBox("清空数据库");
+        qingkongwen = new JCheckBox("清空表格");
+        zhiding = new JCheckBox("置顶");
+        panel2 = new JPanel();
+        panel2.add(zhiding);
+        panel2.add(qingkong);
+        panel2.add(qingkongwen);
+        zhongbu.add(panel2,BorderLayout.NORTH);
+        panel1 = new JPanel();
+        panel1.setLayout(new FlowLayout(FlowLayout.LEFT));
+        zhongbu.add(panel1, BorderLayout.CENTER);
+        shuaixing = new JButton("添加");
+        zhongbu.add(shuaixing,BorderLayout.SOUTH);
+        buttonGroup = new ButtonGroup();
+
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    public JComponent $$$getRootComponent$$$() {
+        return zhongbu;
+    }
+}

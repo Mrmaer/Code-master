@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sql.Shuju">
+
+    <insert id="add">
+      INSERT INTO fast (name,address) VALUES (#{name},#{address})
+    </insert>
+
+    <delete id="delectall">
+        DELETE FROM fast
+    </delete>
+    <delete id="delect" parameterType="string">
+        DELETE  FROM fast WHERE name = #{name}
+    </delete>
+    <select id="select" parameterType="string" resultType="string">
+        SELECT address FROM fast WHERE name = #{name}
+    </select>
+
+    <select id="selectall" resultType="com.bean.Bean">
+        select * from fast;
+    </select>
+</mapper>
+
