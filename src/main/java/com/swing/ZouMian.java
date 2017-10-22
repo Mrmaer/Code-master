@@ -3,17 +3,13 @@ package com.swing;
 
 import com.bean.Bean;
 import com.desk.Code;
+import com.read.Use;
 import com.sql.Shuju;
 import com.sqlsession.Getsql;
-import com.wen.Redxlx;
-
 import org.apache.ibatis.session.SqlSession;
 
-import org.apache.poi.ss.usermodel.Cell;
-
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +17,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.*;
 import java.util.List;
 
 public class ZouMian {
@@ -52,13 +47,9 @@ public class ZouMian {
                 SqlSession getsql = Getsql.geSession();
                 final Shuju shuju = getsql.getMapper(Shuju.class);
                 panel1.removeAll();
-
-                Redxlx redxlx  = Redxlx.getRedxlx();
-
-                redxlx.readxlsx();
-
+                Use use = getUse();
+                use.read();
                 List<Bean> beans = shuju.selectall();
-
                 JRadioButton jRadioButton[] = new JRadioButton[beans.size()];
                 for (int i = 0; i <beans.size(); i++) {
                     final String name = beans.get(i).getName();
@@ -81,15 +72,23 @@ public class ZouMian {
                 zhongbu.validate();
                 zhongbu.repaint();
             }
+
+
         });
 
 
 
     }
 
+    private static Use getUse(){
+        BeanFactory factory = new ClassPathXmlApplicationContext("Opera.xml");
+        Use use = (Use) factory.getBean("useOperating");
+        return use;
+    }
 
     public static void main() {
-         frame = new JFrame("ZouMian");
+        final SqlSession getsql = Getsql.geSession();
+        frame = new JFrame("ZouMian");
         frame.setContentPane(new ZouMian().zhongbu);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -100,7 +99,7 @@ public class ZouMian {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                SqlSession getsql = Getsql.geSession();
+
                 Shuju shuju = getsql.getMapper(Shuju.class);
                 if (qingkong.isSelected())
                 {
@@ -109,40 +108,11 @@ public class ZouMian {
 
                 }
 
-
                 if(qingkongwen.isSelected()){
-                     XSSFWorkbook workbook = null;
-                    workbook = new XSSFWorkbook();
-                    //添加Worksheet（不添加sheet时生成的xls文件打开时会报错)
-                    String fileDir = "src/main/resources/peizhi.xlsx";
-                    String sheetName = "sheet1";
-                    Sheet sheet1 = workbook.createSheet(sheetName);
-                    //新建文件
-                    FileOutputStream out = null;
-                    try {
-                        //添加表头
-                        Row row = workbook.getSheet(sheetName).createRow(0);    //创建第一行
-                        String titleRow[] = {"name","address"};
-                        for(int i = 0;i < titleRow.length;i++){
-                            Cell cell = row.createCell(i);
-                            cell.setCellValue(titleRow[i]);
-                        }
-                        out = new FileOutputStream(fileDir);
-                        workbook.write(out);
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }finally {
-                        try {
-                            if (out != null) {
-                                out.close();
-                            }
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-
-                    }
-
+                    Use use = getUse();
+                    use.qing();
                 }
+                getsql.close();
             }
         });
     }

@@ -1,3 +1,0 @@
-帮助中心首页:http://help2.rd.gz.cn:80/help/main
-帮助中心层级:http://help2.rd.gz.cn:80/help/home/listHelp?surl=http://
-帮助中心保障表:http://help2.rd.gz.cn:80/home/toReport?surl=http://
