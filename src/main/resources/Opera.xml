@@ -5,6 +5,6 @@
     <bean id="operatingxlsx" class="com.read.Operatingxlsx"/>
     <bean id="operatingtxt" class="com.read.Operatingtxt"/>
     <bean id="useOperating" class="com.read.UseOperating">
-        <property name="operating" ref="operatingxlsx"/>
+        <property name="operating" ref="operatingtxt"/>
     </bean>
 </beans>
