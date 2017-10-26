@@ -22,10 +22,12 @@ import java.util.List;
 
 public class ZouMian {
     private JPanel zhongbu;
+    private JPanel jpanelxiugai;
     private static JCheckBox qingkong;
     private static JCheckBox qingkongwen;
     private static JCheckBox zhiding;
     private static JCheckBox openurl;
+    private static JCheckBox rednow;
     private JButton shuaixing;
     private  JPanel panel1;
     private ButtonGroup urlname;
@@ -33,7 +35,11 @@ public class ZouMian {
     private ButtonGroup tfurl;
     private JRadioButton extranet;
     private JRadioButton internal;
+    private JTabbedPane feng;
+    private JButton shangchu;
+    private JCheckBox xiugai[];
     public ZouMian(){
+
         zhiding.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (zhiding.isSelected()){
@@ -46,17 +52,26 @@ public class ZouMian {
         });
         shuaixing.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 SqlSession getsql = Getsql.geSession();
                 final Shuju shuju = getsql.getMapper(Shuju.class);
+
                 panel1.removeAll();
-                Use use = getUse();
-                use.read();
+                jpanelxiugai.removeAll();
+                if (rednow.isSelected()) {
+                    System.out.println("111");
+                    Use use = getUse();
+                    use.read();
+                }
+
                 List<Bean> beans = shuju.selectall();
                 JRadioButton jRadioButton[] = new JRadioButton[beans.size()];
+
+                 xiugai = new JCheckBox[beans.size()];
                 for (int i = 0; i <beans.size(); i++) {
                     final String name = beans.get(i).getName();
+
                     jRadioButton[i] = new JRadioButton(name);
+                    xiugai[i] = new JCheckBox(name);
                     jRadioButton[i].addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             JRadioButton temp = (JRadioButton) e.getSource();
@@ -69,15 +84,17 @@ public class ZouMian {
                                     url = "http://"+dizhi +".com";
                                 if (extranet.isSelected())
                                     url = "https://"+dizhi +".com";
-                                System.out.println(url);
                                 open.url(url);
                             }
                                 Code code = Code.getCode();
                                 code.setSysClipboardText(dizhi);
                         }
                     });
-                    jRadioButton[i].setFont(new Font("宋体", Font.PLAIN, 16));
+                    Font ziti = new Font("宋体", Font.PLAIN, 16);
+                    jRadioButton[i].setFont(ziti);
+                    xiugai[i].setFont(ziti);
                     panel1.add(jRadioButton[i]);
+                    jpanelxiugai.add(xiugai[i]);
                     urlname.add(jRadioButton[i]);
 
                 }
@@ -89,7 +106,22 @@ public class ZouMian {
 
         });
 
+        shangchu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SqlSession getsql = Getsql.geSession();
+                 Shuju shuju = getsql.getMapper(Shuju.class);
+                rednow.setSelected(false);
+                for (int i = 0; i < xiugai.length; i++) {
+                    if (xiugai[i].isSelected()){
+                        String name = xiugai[i].getText();
+                       shuju.delect(name);
+                       getsql.commit();
+                    }
 
+                }
+            }
+        });
 
 
     }
@@ -144,12 +176,16 @@ public class ZouMian {
     private void $$$setupUI$$$() {
         zhongbu = new JPanel();
         zhongbu.setLayout(new BorderLayout(0, 0));
-        qingkong = new JCheckBox("清空数据库");
+
+
+        qingkong = new JCheckBox("清空数据");
         qingkongwen = new JCheckBox("清空表格");
         zhiding = new JCheckBox("置顶");
+        rednow = new JCheckBox("读配置文件",true);
         openurl = new JCheckBox("打开并复制");
         extranet = new JRadioButton("外网");
         internal = new JRadioButton("内网");
+        shangchu = new JButton("删除");
         tfurl = new ButtonGroup();
         tfurl.add(extranet);
         tfurl.add(internal);
@@ -161,10 +197,24 @@ public class ZouMian {
         panel2.add(openurl);
         panel2.add(extranet);
         panel2.add(internal);
+        panel2.add(shangchu);
+        panel2.add(rednow);
         zhongbu.add(panel2,BorderLayout.NORTH);
+
+        feng = new JTabbedPane();
+        String name[] = {"正常","修改"};
+        FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
+
         panel1 = new JPanel();
-        panel1.setLayout(new FlowLayout(FlowLayout.LEFT));
-        zhongbu.add(panel1, BorderLayout.CENTER);
+        panel1.setLayout(flowLayout);
+
+        feng.addTab(name[0],null,panel1,"正常");
+
+        jpanelxiugai = new JPanel();
+        jpanelxiugai.setLayout(flowLayout);
+        feng.addTab(name[1], jpanelxiugai);
+        zhongbu.add(feng, BorderLayout.CENTER);
+
         shuaixing = new JButton("添加");
         zhongbu.add(shuaixing,BorderLayout.SOUTH);
         urlname = new ButtonGroup();
