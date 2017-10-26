@@ -7,6 +7,7 @@ import com.openurl.Open;
 import com.read.Use;
 import com.sql.Shuju;
 import com.sqlsession.Getsql;
+import lombok.SneakyThrows;
 import org.apache.ibatis.session.SqlSession;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -58,7 +59,6 @@ public class ZouMian {
                 panel1.removeAll();
                 jpanelxiugai.removeAll();
                 if (rednow.isSelected()) {
-                    System.out.println("111");
                     Use use = getUse();
                     use.read();
                 }
@@ -112,11 +112,11 @@ public class ZouMian {
                 SqlSession getsql = Getsql.geSession();
                  Shuju shuju = getsql.getMapper(Shuju.class);
                 rednow.setSelected(false);
-                for (int i = 0; i < xiugai.length; i++) {
-                    if (xiugai[i].isSelected()){
-                        String name = xiugai[i].getText();
-                       shuju.delect(name);
-                       getsql.commit();
+                for (JCheckBox aXiugai : xiugai) {
+                    if (aXiugai.isSelected()) {
+                        String name = aXiugai.getText();
+                        shuju.delect(name);
+                        getsql.commit();
                     }
 
                 }
@@ -131,12 +131,9 @@ public class ZouMian {
         return (Use) factory.getBean("useOperating");
     }
 
+    @SneakyThrows(Exception.class)
     public static void main() {
-        try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-        } catch (Exception e) {
-        }
-
+        UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
         final SqlSession getsql = Getsql.geSession();
         frame = new JFrame("ZouMian");
         frame.setContentPane(new ZouMian().zhongbu);

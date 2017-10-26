@@ -1,6 +1,9 @@
 package com.openurl;
 
+import lombok.SneakyThrows;
+
 import java.awt.*;
+import java.io.IOException;
 import java.net.URI;
 
 import static java.awt.Desktop.getDesktop;
@@ -17,9 +20,9 @@ public class Open {
 
     private Open(){}
 
+    @SneakyThrows({NullPointerException.class, IOException.class})
     public void url(String url){
         if(isDesktopSupported()){
-            try{
                 //创建一个URI实例,注意不是URL
                 URI uri= URI.create(url);
                 //获取当前系统桌面扩展
@@ -28,15 +31,7 @@ public class Open {
                 if(dp.isSupported(java.awt.Desktop.Action.BROWSE)){
                     //获取系统默认浏览器打开链接
                     dp.browse(uri);
-
                 }
-            }catch(java.lang.NullPointerException e){
-
-                //此为uri为空时抛出异常
-            }catch(java.io.IOException e){
-
-                //此为无法获取系统默认浏览器
-            }
         }
     }
 }
