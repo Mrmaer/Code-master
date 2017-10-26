@@ -16,7 +16,7 @@ public class Operatingtxt implements Operating{
 
     @SneakyThrows({FileNotFoundException.class,IOException.class})
     public void read() {
-            String str = "";
+            String str;
             @Cleanup
             FileInputStream fis = new FileInputStream("src/main/resources/peizhi.txt");
             @Cleanup

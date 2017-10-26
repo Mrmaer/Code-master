@@ -33,10 +33,8 @@ public class ZouMian {
     private  JPanel panel1;
     private ButtonGroup urlname;
     private static JFrame frame;
-    private ButtonGroup tfurl;
     private JRadioButton extranet;
     private JRadioButton internal;
-    private JTabbedPane feng;
     private JButton shangchu;
     private JCheckBox xiugai[];
     public ZouMian(){
@@ -183,7 +181,7 @@ public class ZouMian {
         extranet = new JRadioButton("外网");
         internal = new JRadioButton("内网");
         shangchu = new JButton("删除");
-        tfurl = new ButtonGroup();
+        ButtonGroup tfurl = new ButtonGroup();
         tfurl.add(extranet);
         tfurl.add(internal);
         internal.setSelected(true);
@@ -198,7 +196,7 @@ public class ZouMian {
         panel2.add(rednow);
         zhongbu.add(panel2,BorderLayout.NORTH);
 
-        feng = new JTabbedPane();
+        JTabbedPane feng = new JTabbedPane();
         String name[] = {"正常","修改"};
         FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
 

@@ -46,22 +46,20 @@ public class Operatingxlsx implements Operating {
     @SneakyThrows(IOException.class)
     public void qingkong() {
 
-        XSSFWorkbook workbook = null;
+        XSSFWorkbook workbook;
         workbook = new XSSFWorkbook();
         //添加Worksheet（不添加sheet时生成的xls文件打开时会报错)
         String fileDir = "src/main/resources/peizhi.xlsx";
         String sheetName = "sheet1";
         Sheet sheet1 = workbook.createSheet(sheetName);
         //新建文件
-        @Cleanup
-        FileOutputStream out = null;
         Row row = workbook.getSheet(sheetName).createRow(0);    //创建第一行
         String titleRow[] = {"name","address"};
         for(int i = 0;i < titleRow.length;i++){
             Cell cell = row.createCell(i);
             cell.setCellValue(titleRow[i]);
         }
-        out = new FileOutputStream(fileDir);
+        @Cleanup FileOutputStream out = new FileOutputStream(fileDir);
         workbook.write(out);
     }
 

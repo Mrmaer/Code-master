@@ -11,7 +11,7 @@ import java.io.Reader;
 
 public class Getsql {
 
-    public static SqlSessionFactory getsql;
+    private static SqlSessionFactory getsql;
     static {
         try {
             Reader reader = Resources.getResourceAsReader("MyBatis.xml");
