@@ -6,9 +6,9 @@ import com.desk.Code;
 import com.openurl.Open;
 import com.read.Use;
 import com.sql.Shuju;
-import com.sqlsession.Getsql;
-import org.apache.ibatis.session.SqlSession;
+import com.sqlsession.GetShu;
 
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -34,6 +34,7 @@ public class ZouMian {
     private JRadioButton extranet;
     private JRadioButton internal;
     public ZouMian(){
+
         zhiding.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (zhiding.isSelected()){
@@ -47,8 +48,9 @@ public class ZouMian {
         shuaixing.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                SqlSession getsql = Getsql.geSession();
-                final Shuju shuju = getsql.getMapper(Shuju.class);
+                GetShu getShu = GetShu.getShu();
+                final Shuju shuju = getShu.getshuju();
+
                 panel1.removeAll();
                 Use use = getUse();
                 use.read();
@@ -99,13 +101,11 @@ public class ZouMian {
         return (Use) factory.getBean("useOperating");
     }
 
+    @SneakyThrows(Exception.class)
     public static void main() {
-        try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-        } catch (Exception e) {
-        }
 
-        final SqlSession getsql = Getsql.geSession();
+        UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+
         frame = new JFrame("ZouMian");
         frame.setContentPane(new ZouMian().zhongbu);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -117,12 +117,10 @@ public class ZouMian {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-
-                Shuju shuju = getsql.getMapper(Shuju.class);
+                Shuju shuju = GetShu.getShu().getshuju();
                 if (qingkong.isSelected())
                 {
                     shuju.delectall();
-                    getsql.commit();
 
                 }
 
@@ -130,7 +128,7 @@ public class ZouMian {
                     Use use = getUse();
                     use.qing();
                 }
-                getsql.close();
+
             }
         });
     }
