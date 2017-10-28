@@ -1,10 +1,12 @@
 package com.sql;
 
 import com.bean.Bean;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface Shuju {
+@Repository
+public interface Shuju extends ShujuMapper{
     public void add(Bean bean);
     public void delectall();
     public void delect(String name);
